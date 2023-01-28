@@ -1,0 +1,12 @@
+{
+    "projects": [
+        {
+            "name": "ws",
+            "path": "/Users/zee/ws"
+        },
+        {
+            "name": "notes",
+            "path": "/Users/zee/notes"
+        }
+    ]
+}
