@@ -44,7 +44,7 @@ class GotoConfig:
         if not os.path.exists(full_path) or not os.path.isdir(full_path):
             return (
                 None,
-                f"'{TermCol.MG(full_path)}' does not exist or is not a directory",
+                f"'{TermCol.MG(full_path)}' does not exist or is not a directory",  # noqa: E501
             )
         if name in self.data["projects"]:
             return None, f"project '{TermCol.MG(name)}' already exists"
@@ -100,7 +100,7 @@ class GotoConfig:
         """
 
         if len(self.projects) == 0:
-            print(TermCol.WH_B("projects:"))
+            print(TermCol.WH_B("no projects"))
             return
 
         formatted_config = {
@@ -197,11 +197,11 @@ def usage(name="goto", flag=None):
     messages = {
         "about": TermCol.MG_B("goto") + ": a terminal project switcher\n",
         "main": TermCol.NC_B("usage:"),
-        "switch": f"    {binary} {TermCol.MG_B(name_arg)}                    - switch to named project",
-        "register": f"    {binary} {flags['-r']} {TermCol.GR_B(name_arg)} {TermCol.GR_B(path_arg)}  - register new project path  [-r/--register]",
-        "delete": f"    {binary} {flags['-d']} {TermCol.RD_B(name_arg)}                 - remove project from config [-d/--delete]",
-        "list": f"    {binary} {flags['-l']}                                - list all project configs   [-l/--list]",
-        "help": f"    {binary} {flags['-h']}                                - print this help message    [-h/--help]",
+        "switch": f"    {binary} {TermCol.MG_B(name_arg)}                    - switch to named project",  # noqa: E501
+        "register": f"    {binary} {flags['-r']} {TermCol.GR_B(name_arg)} {TermCol.GR_B(path_arg)}  - register new project path  [-r/--register]",  # noqa: E501
+        "delete": f"    {binary} {flags['-d']} {TermCol.RD_B(name_arg)}                 - remove project from config [-d/--delete]",  # noqa: E501
+        "list": f"    {binary} {flags['-l']}                                - list all project configs   [-l/--list]",  # noqa: E501
+        "help": f"    {binary} {flags['-h']}                                - print this help message    [-h/--help]",  # noqa: E501
     }
 
     if flag is None:
@@ -222,7 +222,7 @@ def parse_args(args=None):
         if len(iterable) != expected_len:
             parsed_args[
                 "error"
-            ] = f"expected {expected_len} argument(s), received {len(iterable)}"
+        ] = f"expected {expected_len} argument(s), received {len(iterable)}"  # noqa: E501
             parsed_args["action"] = flag
             parsed_args["ret_code"] = 1
             return False
@@ -269,7 +269,7 @@ if __name__ == "__main__":
     if args.ret_code != 0:
         if args.error:
             handle_error(
-                args.error, usage=usage(flag=args.action), exit_code=args.ret_code
+                args.error, usage=usage(flag=args.action), exit_code=args.ret_code  # noqa: E501
             )
 
     try:
@@ -279,16 +279,16 @@ if __name__ == "__main__":
 
     if args.action == "register":
         did_add, err = config.add_project(args.project_name, args.project_path)
-        if err != None:
+        if err is not None:
             handle_error(err)
     elif args.action == "delete":
         did_remove, err = config.remove_project(args.project_name)
-        if err != None:
+        if err is not None:
             handle_error(err)
     elif args.action == "list":
         config.list_projects()
     elif args.action == "switch":
         path, err = config.get_project(args.project_name)
-        if err != None:
+        if err is not None:
             handle_error(err)
         spawn_shell_and_kill(path)
