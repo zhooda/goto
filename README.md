@@ -2,6 +2,8 @@
 
 a terminal project switcher
 
+![goto](./res/goto_demo.gif)
+
 ## Installation
 
 ```bash
