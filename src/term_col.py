@@ -1,6 +1,3 @@
-import enum
-
-
 class meta(type):
     def __getattr__(cls, item):
         t = TermCol()

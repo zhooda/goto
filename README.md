@@ -10,9 +10,26 @@ a terminal project switcher
 # clone the repository
 git clone https://github.com/zhooda/goto
 
-# symlink to /usr/local/bin or wherever
-# you keep user installed binaries
-ln -s goto/goto.py /usr/local/bin/goto
+# install Python dependencies
+# NOTE: only needed for building,
+#       you can uninstall after
+python3 -m pip install black isort
+
+# build the script
+make build
+
+# install to /usr/local/bin
+sudo make install
+# or install to a custom location
+make install INSTALL_DIR=/path/to/bin
+
+# clean build files
+make clean
+# uninstall
+sudo make distclean
+
+# uninstall Python dependencies (if needed)
+python3 -m pip uninstall black isort
 ```
 
 ## Usage

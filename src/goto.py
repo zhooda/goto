@@ -1,11 +1,17 @@
-#!/usr/bin/env python3
-
 import argparse
 import json
 import os
 import signal
 
 from term_col import TermCol
+from about import (
+    __version__,
+    __author__,
+    __email__,
+    __license__,
+    __description__,
+    __url__,
+)
 
 
 class GotoConfig:
@@ -44,7 +50,7 @@ class GotoConfig:
         if not os.path.exists(full_path) or not os.path.isdir(full_path):
             return (
                 None,
-                f"'{TermCol.MG(full_path)}' does not exist or is not a directory",  # noqa: E501
+                f"'{TermCol.MG(full_path)}' does not exist or is not a directory",
             )
         if name in self.data["projects"]:
             return None, f"project '{TermCol.MG(name)}' already exists"
@@ -195,13 +201,19 @@ def usage(name="goto", flag=None):
         "-h": TermCol.YL_B("-h"),
     }
     messages = {
-        "about": TermCol.MG_B("goto") + ": a terminal project switcher\n",
+        "about": TermCol.MG_B("goto")
+        + TermCol.WH_NB(f" v{__version__} ({__license__})\n"),
+        # ": a terminal project switcher",
         "main": TermCol.NC_B("usage:"),
-        "switch": f"    {binary} {TermCol.MG_B(name_arg)}                    - switch to named project",  # noqa: E501
-        "register": f"    {binary} {flags['-r']} {TermCol.GR_B(name_arg)} {TermCol.GR_B(path_arg)}  - register new project path  [-r/--register]",  # noqa: E501
-        "delete": f"    {binary} {flags['-d']} {TermCol.RD_B(name_arg)}                 - remove project from config [-d/--delete]",  # noqa: E501
-        "list": f"    {binary} {flags['-l']}                                - list all project configs   [-l/--list]",  # noqa: E501
-        "help": f"    {binary} {flags['-h']}                                - print this help message    [-h/--help]",  # noqa: E501
+        "switch": f"    {binary} {TermCol.MG_B(name_arg)}                    - switch to named project",
+        "register": f"    {binary} {flags['-r']} {TermCol.GR_B(name_arg)} {TermCol.GR_B(path_arg)}  - register new project path  [-r/--register]",
+        "delete": f"    {binary} {flags['-d']} {TermCol.RD_B(name_arg)}                 - remove project from config [-d/--delete]",
+        "list": f"    {binary} {flags['-l']}                                - list all project configs   [-l/--list]",
+        "help": f"    {binary} {flags['-h']}                                - print this help message    [-h/--help]",
+        "source": TermCol.WH_B("\nsource: ") + TermCol.WH_NB_UL(__url__),
+        "by": TermCol.WH_NB(
+            f"        by {__author__.lower()} {TermCol.WH_NB_UL('<' + __email__ + '>')}"
+        ),
     }
 
     if flag is None:
@@ -222,7 +234,7 @@ def parse_args(args=None):
         if len(iterable) != expected_len:
             parsed_args[
                 "error"
-        ] = f"expected {expected_len} argument(s), received {len(iterable)}"  # noqa: E501
+            ] = f"expected {expected_len} argument(s), received {len(iterable)}"
             parsed_args["action"] = flag
             parsed_args["ret_code"] = 1
             return False
@@ -269,7 +281,9 @@ if __name__ == "__main__":
     if args.ret_code != 0:
         if args.error:
             handle_error(
-                args.error, usage=usage(flag=args.action), exit_code=args.ret_code  # noqa: E501
+                args.error,
+                usage=usage(flag=args.action),
+                exit_code=args.ret_code,
             )
 
     try:

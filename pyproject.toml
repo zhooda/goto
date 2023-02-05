@@ -1,0 +1,12 @@
+[tool.isort]
+skip = ["src"]
+multi_line_output = 3
+include_trailing_comma = true
+float_to_top = true
+line_length = 88
+remove_imports = ["about", "term_col"]
+quiet = true
+
+[tool.black]
+line-length = 88
+quiet = true
