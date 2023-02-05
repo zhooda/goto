@@ -38,15 +38,26 @@ else
 	check_release := $(error Error invalid release type: '$(release)')
 endif
 
-VERSION = $(shell grep "^__version__" $(S_ABOUT) | awk -F'"' '{FS="[.-]"; $$0 = $$2;} {($$4 != "$(V_RELEASE)" || $(V_LEVEL) <= 3) ? $$5 = 1 : $$5++} {($(V_LEVEL) != 5) ? $$$(V_LEVEL)++ : $$$(V_LEVEL) = $$$(V_LEVEL); (!"$(V_RELEASE)") ? ver = sprintf("%s.%s.%s", $$1, $$2, $$3) : ver = sprintf("%s.%s.%s-$(V_RELEASE).%d", $$1, $$2, $$3, $$5); print ver}')
+VERSION := $(shell grep "^__version__" $(S_ABOUT) | awk -F'"' '{FS="[.-]"; $$0 = $$2;} {($$4 != "$(V_RELEASE)" || $(V_LEVEL) <= 3) ? $$5 = 1 : $$5++} {($(V_LEVEL) != 5) ? $$$(V_LEVEL)++ : $$$(V_LEVEL) = $$$(V_LEVEL); (!"$(V_RELEASE)") ? ver = sprintf("%s.%s.%s", $$1, $$2, $$3) : ver = sprintf("%s.%s.%s-$(V_RELEASE).%d", $$1, $$2, $$3, $$5); print ver}')
+CURRENT := $(shell grep "^__version__" $(S_ABOUT) | awk -F'"' '{print $$2}')
+
+GIT := git -c "user.name=ci" -c "user.email=ci@sparselabs.org"
 
 .PHONY: all
 all: build
 
 .PHONY: tag
-tag: version build
+tag: bump build
 	@echo tagging release $(VERSION)
-	@git tag -a v$(VERSION) -m "type: $(release), level: $(level), v$(VERSION)"
+	@$(GIT) add $(S_ABOUT)
+	@$(GIT) commit -m "[make] \`$(level)\` bump to: \`v$(VERSION)\` from: \`$(CURRENT)\`"
+	@$(GIT) tag -a v$(VERSION) -m "type: \`$(release)\`, level: \`$(level)\`, \`v$(VERSION)\`"
+
+.PHONY: undo-tag
+undo-tag:
+	@echo undoing tag
+	@$(GIT) tag -d v$(CURRENT)
+	@$(GIT) reset --hard HEAD~1
 
 .PHONY: install
 install: build
@@ -77,8 +88,8 @@ build: $(S_ABOUT) $(S_GOTO) $(S_TERM_COL)
 	@echo built: $(BIN)
 
 .PHONY: bump
-bump:
-	@echo updating src version to: $(VERSION)
+bump: current next-bump
+	@echo updating src version to: $(VERSION) from $(CURRENT)
 	@sed -i.bak 's/^__version__ = .*/__version__ = "$(VERSION)"/g' $(S_ABOUT)
 
 .PHONY: undo-bump
@@ -93,7 +104,7 @@ next-bump: $(S_ABOUT) $(S_GOTO) $(S_TERM_COL) current
 
 .PHONY: current
 current:
-	@echo current version: $(shell grep "^__version__" $(S_ABOUT) | awk -F'"' '{print $$2}')
+	@echo current version: $(CURRENT)
 
 .PHONY: distclean
 distclean: clean
